@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.SunmiWebViewPrint" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#F0AD4E</item>
+        <item name="colorPrimaryVariant">#EC971F</item>
+        <item name="colorOnPrimary">#000000</item>
+        <item name="android:statusBarColor">#EC971F</item>
+        <item name="android:windowBackground">#FFFFFF</item>
+    </style>
+</resources>
