@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREFS = "sunmi_prefs";
     private static final String KEY_URL = "home_url";
 
-    // >>> এখানে আপনার ওয়েবসাইটের মূল URL দিন <<<
+    // >>> আপনার সাইট <<<
     private static final String DEFAULT_HOME_URL = "https://mathbor.robotispsoft.xyz/";
 
     private WebView webView;
@@ -57,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
         setupWebView();
         setupButtons();
 
-        // Load home URL
         String url = prefs.getString(KEY_URL, DEFAULT_HOME_URL);
         webView.loadUrl(url);
     }
@@ -101,17 +100,15 @@ public class MainActivity extends AppCompatActivity {
         settings.setAllowContentAccess(true);
         settings.setLoadWithOverviewMode(true);
         settings.setUseWideViewPort(true);
+        // Zoom enable (pinch + double-tap)
         settings.setSupportZoom(true);
-        settings.setBuiltInZoomControls(false);
+        settings.setBuiltInZoomControls(true);
         settings.setDisplayZoomControls(false);
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         settings.setMediaPlaybackRequiresUserGesture(false);
+        settings.setTextZoom(100);
 
-        // Important: allow cleartext if your site is http
-        // (already set in Manifest usesCleartextTraffic=true)
-
-        // Inject both bridge names so your PHP works as-is
         webView.addJavascriptInterface(jsBridge, "SunmiBridge");
         webView.addJavascriptInterface(jsBridge, "lee");
 
@@ -126,9 +123,8 @@ public class MainActivity extends AppCompatActivity {
             public void onPageFinished(WebView view, String url) {
                 progressBar.setVisibility(View.GONE);
                 tvTitle.setText(view.getTitle() != null ? view.getTitle() : "BSD Sunmi Print");
-
-                // Re-inject bridge safety (some pages recreate window)
                 injectBridgeHelper();
+                enablePageZoom(view);
             }
 
             @Override
@@ -140,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                return false; // load inside WebView
+                return false;
             }
         });
 
@@ -157,9 +153,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Extra safety: make sure window.SunmiBridge and window.lee exist
-     */
     private void injectBridgeHelper() {
         String js = "javascript:(function(){"
                 + "if(typeof window.SunmiBridge==='undefined'){window.SunmiBridge={};}"
@@ -167,6 +160,28 @@ public class MainActivity extends AppCompatActivity {
                 + "console.log('Sunmi bridge injected');"
                 + "})();";
         webView.evaluateJavascript(js, null);
+    }
+
+    private void enablePageZoom(WebView view) {
+        String js =
+            "(function(){"
+          + "var metas=document.getElementsByTagName('meta');"
+          + "var found=false;"
+          + "for(var i=0;i<metas.length;i++){"
+          + "  if((metas[i].getAttribute('name')||'').toLowerCase()==='viewport'){"
+          + "    metas[i].setAttribute('content','width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes');"
+          + "    found=true;"
+          + "  }"
+          + "}"
+          + "if(!found){"
+          + "  var m=document.createElement('meta');"
+          + "  m.name='viewport';"
+          + "  m.content='width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes';"
+          + "  document.getElementsByTagName('head')[0].appendChild(m);"
+          + "}"
+          + "document.body.style.webkitTextSizeAdjust='auto';"
+          + "})();";
+        view.evaluateJavascript(js, null);
     }
 
     private void setupButtons() {
