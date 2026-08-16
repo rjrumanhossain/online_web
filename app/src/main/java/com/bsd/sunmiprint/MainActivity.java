@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 progressBar.setVisibility(View.GONE);
-                tvTitle.setText(view.getTitle() != null ? view.getTitle() : "BSD Sunmi Print");
+                tvTitle.setText(view.getTitle() != null ? view.getTitle() : "Mathbor ISP");
                 injectBridgeHelper();
                 enablePageZoom(view);
             }
