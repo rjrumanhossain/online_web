@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String KEY_URL = "home_url";
 
     // >>> এখানে আপনার ওয়েবসাইটের মূল URL দিন <<<
-    private static final String DEFAULT_HOME_URL = "https://your-domain.com/";
+    private static final String DEFAULT_HOME_URL = "https://mathbor.robotispsoft.xyz/";
 
     private WebView webView;
     private ProgressBar progressBar;
